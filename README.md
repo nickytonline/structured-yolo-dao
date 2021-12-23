@@ -1,17 +1,19 @@
-# Web3 Starter
+[![Netlify Status](https://api.netlify.com/api/v1/badges/07c2eaba-441d-4386-b678-73de56b3ab12/deploy-status)](https://app.netlify.com/sites/structured-yolo-dao/deploys)
 
-The goal of this project is to give you an opinionated boilerplate to start a
-web3 project.
+# Structured YOLO DAO
+
+My [Buildspace](https://buildspace) DAO project. Lots of fun and as always,
+thanks Buildspace team for such great learning content!
 
 ## Contributing
 
 If you are interested in contributing to the project, first read our
 [contributing guidelines](./CONTRIBUTING.md). Take a look at our
-[existing issues](https://github.com/nickytonline/unofficial-edge-and-node-starter/issues),
+[existing issues](https://github.com/nickytonline/structured-yolo-dao/issues),
 or if you come across an issue,
-[create an issue](https://github.com/nickytonline/unofficial-edge-and-node-starter/issues/new/choose).
+[create an issue](https://github.com/nickytonline/structured-yolo-dao/issues/new/choose).
 For feature requests,
-[start a discussion](https://github.com/nickytonline/unofficial-edge-and-node-starter/discussions)
+[start a discussion](https://github.com/nickytonline/structured-yolo-dao/discussions)
 first.
 
 ## Getting Started (Local Development)
@@ -38,10 +40,10 @@ result.
 ## Getting Started (Gitpod)
 
 The project can be run in Gitpod. Navigate to
-https://gitpod.io/#https://github.com/nickytonline/hello-edge-and-node. If you
+https://gitpod.io/#https://github.com/nickytonline/structured-yolo-dao. If you
 wish to load it in Gitpod as an external contributor, you will need to fork the
 project first, then open the fork in Gitpod, e.g.
-https://gitpod.io/#https://github.com/some_user_that_forked_the_repository/hello-edge-and-node.
+https://gitpod.io/#https://github.com/some_user_that_forked_the_repository/structured-yolo-dao.
 
 1. Gitpod will take a minute or two to load.
 1. If this is the first time loading the project in Gitpod, it will take longer
@@ -103,31 +105,6 @@ yarn build-storybook
 
 ## Under the hood
 
-### Basic Sample Hardhat Project
-
-This project demonstrates a basic Hardhat use case. It comes with a sample
-contract, a test for that contract, a sample script that deploys that contract,
-and an example of a task implementation, which simply lists the available
-accounts.
-
-Try running some of the following tasks:
-
-```shell
-npx hardhat accounts
-npx hardhat compile
-npx hardhat clean
-npx hardhat test
-npx hardhat node
-node scripts/sample-script.js
-npx hardhat help
-```
-
-Unlike jest, tests for Hardhat are located in the `/test` folder and use
-mocha/chai.
-
-For more on Hardhat, see the
-[official documentation](https://hardhat.org/getting-started/).
-
 ### Next.js
 
 This is a [Next.js](https://nextjs.org/) project bootstrapped with
@@ -154,27 +131,13 @@ You can check out
 [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your
 feedback and contributions are welcome!
 
-### Apollo
+### ThirdWeb
 
-For more on Apollo, check out their
-[official documentation](http://apollographql.com/docsd).
-
-### Ethers.js
-
-For more on Ethers.js, check out their
-[official documentation](https://docs.ethers.io/).
+ThirdWeb allows you to create a DAO without any smart contracts. Just
+JavaScript! For more information, visit the [ThirdWeb](https://thirdweb.com/)
+site.
 
 ### Theme UI
 
 For more on theme UI, check out their
 [official documentation](https://theme-ui.com/getting-started).
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the
-[Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme)
-from the creators of Next.js.
-
-Check out our
-[Next.js deployment documentation](https://nextjs.org/docs/deployment) for more
-details.

@@ -7,9 +7,9 @@ export const defaultTheme: Theme = {
     monospace: 'Menlo, monospace',
   },
   colors: {
-    text: '#000',
-    background: '#fff',
+    text: '#fff',
+    background: 'rgba(0, 0, 0, 0.95)',
     primary: '#33e',
-    accent: '#ff7518',
+    accent: '#5d108a',
   },
 };

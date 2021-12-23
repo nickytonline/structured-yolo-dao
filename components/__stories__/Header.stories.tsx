@@ -1,13 +1,13 @@
 import { Meta } from '@storybook/react';
-import { ExampleHeader } from '@components/Header';
+import { Header } from '@components/Header';
 
 const meta: Meta = {
   title: 'Components/Example Header',
-  component: ExampleHeader,
+  component: Header,
   argTypes: {},
 };
 export default meta;
 
 export const Default: React.VFC = () => {
-  return <ExampleHeader />;
+  return <Header />;
 };

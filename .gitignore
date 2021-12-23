@@ -121,6 +121,7 @@ dist
 .pnp.*
 
 .vercel
+.netlify
 
 # macOS files to ignore
 .DS_Store
