@@ -304,7 +304,7 @@ const Home: NextPage = () => {
   }
 
   const votingState = hasVoted ? 'voted' : isVoting ? 'voting' : 'vote';
-
+  const displayContents = hasMetaMask && address;
   return (
     <>
       <Head>
@@ -337,8 +337,8 @@ const Home: NextPage = () => {
         <Header />
       </header>
       <main sx={{ margin: '16px' }}>
-        {hasMetaMask ? (
-          hasClaimedNFT && address ? (
+        {displayContents ? (
+          hasClaimedNFT ? (
             <div>
               <h1>🍪 DAO Member Page</h1>
               <p>
@@ -352,11 +352,11 @@ const Home: NextPage = () => {
                 votingState={votingState}
               />
             </div>
-          ) : address ? (
+          ) : (
             <Button onClick={() => !isClaiming && mintNft()}>
               {isClaiming ? 'Minting...' : `Mint your NFT (It's free!)`}
             </Button>
-          ) : null
+          )
         ) : null}
       </main>
       <Footer />
