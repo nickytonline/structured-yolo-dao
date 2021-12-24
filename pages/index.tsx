@@ -15,6 +15,9 @@ import { BigNumberish, ethers } from 'ethers';
 import { toast, ToastContainer } from 'react-toastify';
 import { getMissingMetamaskMessage } from 'utilities/metamask';
 import 'react-toastify/dist/ReactToastify.css';
+import { DaoMembers } from '@components/DaoMembers';
+import { DaoProposals } from '@components/DaoProposals';
+import { Footer } from '@components/Footer';
 
 function shortenAddress(address: string) {
   return (
@@ -30,20 +33,6 @@ const tokenModule = sdk.getTokenModule(TOKEN_MODULE_ADDRESS);
 const voteModule = sdk.getVoteModule(VOTE_MODULE_ADDRESS);
 
 const DEFAULT_AVATAR = '/assets/default-avatar.svg';
-const tableStyles = {
-  backgroundColor: '#fff',
-  color: '#000',
-  padding: '8px',
-  minWidth: '350px',
-  maxWidth: '80vw',
-  border: '8px solid',
-  // Thanks for the border gradient tip https://css-tricks.com/gradient-borders-in-css
-  borderImageSlice: 1,
-  borderWidth: '4px',
-  borderImageSource:
-    'linear-gradient(90deg, #d53a9d 0%, rgba(0,255,255,1) 50%, #d400ff 100%)',
-  borderRadius: '8px',
-};
 
 const Home: NextPage = () => {
   const { connectWallet, address, avatar, domainName, error, provider } =
@@ -250,6 +239,94 @@ const Home: NextPage = () => {
     );
   }
 
+  async function vote() {
+    if (!address || isVoting || hasVoted) {
+      return;
+    }
+
+    //before we do async things, we want to disable the button to prevent double clicks
+    setIsVoting(true);
+
+    // lets get the votes from the form for the values
+    const votes = proposals.map((proposal) => {
+      let voteResult = {
+        proposalId: proposal.proposalId,
+        //abstain by default
+        vote: 2,
+      };
+
+      proposal.votes.forEach((vote) => {
+        const elem = document.getElementById(
+          proposal.proposalId + '-' + vote.type,
+        ) as HTMLInputElement;
+
+        if (elem.checked) {
+          voteResult.vote = vote.type;
+          return;
+        }
+      });
+      return voteResult;
+    });
+
+    // first we need to make sure the user delegates their token to vote
+    try {
+      //we'll check if the wallet still needs to delegate their tokens before they can vote
+      const delegation = await tokenModule.getDelegationOf(address);
+      // if the delegation is the 0x0 address that means they have not delegated their governance tokens yet
+      if (delegation === ethers.constants.AddressZero) {
+        //if they haven't delegated their tokens yet, we'll have them delegate them before voting
+        await tokenModule.delegateTo(address);
+      }
+      // then we need to vote on the proposals
+      try {
+        await Promise.all(
+          votes.map(async (vote) => {
+            // before voting we first need to check whether the proposal is open for voting
+            // we first need to get the latest state of the proposal
+            const proposal = await voteModule.get(vote.proposalId);
+            // then we check if the proposal is open for voting (state === 1 means it is open)
+            if (proposal.state === 1) {
+              // if it is open for voting, we'll vote on it
+              return voteModule.vote(vote.proposalId, vote.vote);
+            }
+            // if the proposal is not open for voting we just return nothing, letting us continue
+            return;
+          }),
+        );
+        try {
+          // if any of the propsals are ready to be executed we'll need to execute them
+          // a proposal is ready to be executed if it is in state 4
+          await Promise.all(
+            votes.map(async (vote) => {
+              // we'll first get the latest state of the proposal again, since we may have just voted before
+              const proposal = await voteModule.get(vote.proposalId);
+
+              //if the state is in state 4 (meaning that it is ready to be executed), we'll execute the proposal
+              if (proposal.state === 4) {
+                return voteModule.execute(vote.proposalId);
+              }
+            }),
+          );
+          // if we get here that means we successfully voted, so let's set the "hasVoted" state to true
+          setHasVoted(true);
+          // and log out a success message
+          console.log('successfully voted');
+        } catch (err) {
+          console.error('failed to execute votes', err);
+        }
+      } catch (err) {
+        console.error('failed to vote', err);
+      }
+    } catch (err) {
+      console.error('failed to delegate tokens');
+    } finally {
+      // in *either* case we need to set the isVoting state to false to enable the button again
+      setIsVoting(false);
+    }
+  }
+
+  const votingState = hasVoted ? 'voted' : isVoting ? 'voting' : 'vote';
+
   return (
     <>
       <Head>
@@ -283,223 +360,28 @@ const Home: NextPage = () => {
       </header>
       <main sx={{ margin: '16px' }}>
         {hasMetaMask ? (
-          hasClaimedNFT ? (
+          hasClaimedNFT && address ? (
             <div>
               <h1>🍪 DAO Member Page</h1>
               <p>
                 <em>You&apos;re in friend!</em> Congrats on being a member of
                 the DAO!
               </p>
-              <div>
-                <h2>Member List</h2>
-                <table sx={tableStyles}>
-                  <thead>
-                    <tr sx={{ '& th': { textAlign: 'left' } }}>
-                      <th>Address</th>
-                      <th>Token Amount</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {memberList.map((member) => {
-                      return (
-                        <tr key={member.address}>
-                          <td>{shortenAddress(member.address)}</td>
-                          <td>{member.tokenAmount}</td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
-              <div>
-                <h2>Active Proposals</h2>
-                <form
-                  onSubmit={async (e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-
-                    if (!address) {
-                      return;
-                    }
-
-                    //before we do async things, we want to disable the button to prevent double clicks
-                    setIsVoting(true);
-
-                    // lets get the votes from the form for the values
-                    const votes = proposals.map((proposal) => {
-                      let voteResult = {
-                        proposalId: proposal.proposalId,
-                        //abstain by default
-                        vote: 2,
-                      };
-
-                      proposal.votes.forEach((vote) => {
-                        const elem = document.getElementById(
-                          proposal.proposalId + '-' + vote.type,
-                        ) as HTMLInputElement;
-
-                        if (elem.checked) {
-                          voteResult.vote = vote.type;
-                          return;
-                        }
-                      });
-                      return voteResult;
-                    });
-
-                    // first we need to make sure the user delegates their token to vote
-                    try {
-                      //we'll check if the wallet still needs to delegate their tokens before they can vote
-                      const delegation = await tokenModule.getDelegationOf(
-                        address,
-                      );
-                      // if the delegation is the 0x0 address that means they have not delegated their governance tokens yet
-                      if (delegation === ethers.constants.AddressZero) {
-                        //if they haven't delegated their tokens yet, we'll have them delegate them before voting
-                        await tokenModule.delegateTo(address);
-                      }
-                      // then we need to vote on the proposals
-                      try {
-                        await Promise.all(
-                          votes.map(async (vote) => {
-                            // before voting we first need to check whether the proposal is open for voting
-                            // we first need to get the latest state of the proposal
-                            const proposal = await voteModule.get(
-                              vote.proposalId,
-                            );
-                            // then we check if the proposal is open for voting (state === 1 means it is open)
-                            if (proposal.state === 1) {
-                              // if it is open for voting, we'll vote on it
-                              return voteModule.vote(
-                                vote.proposalId,
-                                vote.vote,
-                              );
-                            }
-                            // if the proposal is not open for voting we just return nothing, letting us continue
-                            return;
-                          }),
-                        );
-                        try {
-                          // if any of the propsals are ready to be executed we'll need to execute them
-                          // a proposal is ready to be executed if it is in state 4
-                          await Promise.all(
-                            votes.map(async (vote) => {
-                              // we'll first get the latest state of the proposal again, since we may have just voted before
-                              const proposal = await voteModule.get(
-                                vote.proposalId,
-                              );
-
-                              //if the state is in state 4 (meaning that it is ready to be executed), we'll execute the proposal
-                              if (proposal.state === 4) {
-                                return voteModule.execute(vote.proposalId);
-                              }
-                            }),
-                          );
-                          // if we get here that means we successfully voted, so let's set the "hasVoted" state to true
-                          setHasVoted(true);
-                          // and log out a success message
-                          console.log('successfully voted');
-                        } catch (err) {
-                          console.error('failed to execute votes', err);
-                        }
-                      } catch (err) {
-                        console.error('failed to vote', err);
-                      }
-                    } catch (err) {
-                      console.error('failed to delegate tokens');
-                    } finally {
-                      // in *either* case we need to set the isVoting state to false to enable the button again
-                      setIsVoting(false);
-                    }
-                  }}
-                >
-                  {proposals.map((proposal, index) => (
-                    <div sx={tableStyles} key={proposal.proposalId}>
-                      <fieldset
-                        sx={{
-                          border: 'none',
-                          '& label': { marginRight: '8px' },
-                        }}
-                      >
-                        <legend>{proposal.description}</legend>
-                        {proposal.votes.map((vote) => (
-                          <label
-                            htmlFor={proposal.proposalId + '-' + vote.type}
-                            key={vote.type}
-                          >
-                            <input
-                              type="radio"
-                              id={proposal.proposalId + '-' + vote.type}
-                              name={proposal.proposalId}
-                              value={vote.type}
-                              //default the "abstain" vote to chedked
-                              defaultChecked={vote.type === 2}
-                            />
-                            {vote.label}
-                          </label>
-                        ))}
-                      </fieldset>
-                    </div>
-                  ))}
-                  <Button disabled={isVoting || hasVoted} type="submit">
-                    {isVoting
-                      ? 'Voting...'
-                      : hasVoted
-                      ? 'You Already Voted'
-                      : 'Submit Votes'}
-                  </Button>
-                  <span sx={{ marginLeft: '8px' }}>
-                    This will trigger multiple transactions that you will need
-                    to sign.
-                  </span>
-                </form>
-              </div>
+              <DaoMembers members={memberList} />
+              <DaoProposals
+                proposals={proposals}
+                vote={vote}
+                votingState={votingState}
+              />
             </div>
           ) : address ? (
-            <Button
-              disabled={isClaiming}
-              onClick={() => !isClaiming && mintNft()}
-            >
+            <Button onClick={() => !isClaiming && mintNft()}>
               {isClaiming ? 'Minting...' : `Mint your NFT (It's free!)`}
             </Button>
           ) : null
         ) : null}
       </main>
-      <footer>
-        <nav>
-          <ul
-            sx={{
-              listStyle: 'none',
-              display: 'grid',
-              gridTemplateColumns: 'repeat(4, 1fr)',
-              placeItems: 'center',
-              margin: 0,
-              marginTop: '1rem',
-              padding: 0,
-              gridGap: '1rem',
-              '& a': {
-                color: '#ffc0cb',
-              },
-            }}
-          >
-            <li>
-              <a href="https://github.com/nickytonline/structured-yolo-dao">
-                source code
-              </a>
-            </li>
-            <li>
-              <a href="https://timeline.iamdeveloper.com">about Nick</a>
-            </li>
-            <li>
-              <a href="https://buildspace.so">
-                Buildspace <span aria-hidden="true">🦄</span>
-              </a>
-            </li>
-            <li>
-              <a href="https://thirdweb.com">ThirdWeb</a>
-            </li>
-          </ul>
-        </nav>
-      </footer>
+      <Footer />
     </>
   );
 };
