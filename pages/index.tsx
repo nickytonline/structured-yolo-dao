@@ -3,7 +3,7 @@ import Head from 'next/head';
 import { Header } from '@components/Header';
 import { Wallet } from '@components/Wallet';
 import { useWeb3WithEns } from 'utilities/hooks';
-import { ThirdwebSDK } from '@3rdweb/sdk';
+import { Proposal, ThirdwebSDK } from '@3rdweb/sdk';
 import {
   BUNDLE_DROP_ADDRESS,
   TOKEN_MODULE_ADDRESS,
@@ -15,22 +15,6 @@ import { BigNumberish, ethers } from 'ethers';
 import { toast, ToastContainer } from 'react-toastify';
 import { getMissingMetamaskMessage } from 'utilities/metamask';
 import 'react-toastify/dist/ReactToastify.css';
-
-interface VoteResult {
-  proposalId: string;
-  vote: number;
-}
-
-interface Vote {
-  label: string;
-  type: number;
-}
-
-interface Proposal {
-  proposalId: string;
-  description: string;
-  votes: Vote[];
-}
 
 function shortenAddress(address: string) {
   return (
