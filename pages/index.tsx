@@ -187,22 +187,28 @@ const Home: NextPage = () => {
       });
   }, [hasClaimedNFT, proposals, address]);
 
-  const mintNft = () => {
+  const mintNft = async () => {
+    if (!address) {
+      return;
+    }
+
     setIsClaiming(true);
-    // Mint an NFT to the user's wallet.
-    bundleDropModule
-      .claim('0', 1)
-      .catch((err) => {
-        console.error('failed to claim', err);
-        setIsClaiming(false);
-      })
-      .finally(() => {
-        setIsClaiming(false);
-        setHasClaimedNFT(true);
-        console.log(
-          `🌊 Successfully Minted! Check it out on OpenSea: https://testnets.opensea.io/assets/${bundleDropModule.address}/0`,
-        );
-      });
+    toast.info('🔨 Minting NFT...', { toastId: address });
+
+    try {
+      // Mint an NFT to the user's wallet.
+      await bundleDropModule.claim('0', 1);
+      setHasClaimedNFT(true);
+      toast.info(
+        `🌊 Successfully Minted! Check it out on OpenSea: https://testnets.opensea.io/assets/${bundleDropModule.address}/0`,
+      );
+    } catch (err) {
+      toast.error(`💥 Failed to mint NFT. Please try again.`);
+      console.error('failed to claim', err);
+    } finally {
+      setIsClaiming(false);
+      toast.dismiss(address);
+    }
   };
 
   if (error && error.name === 'UnsupportedChainIdError') {
