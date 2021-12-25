@@ -66,6 +66,15 @@ const Home: NextPage = () => {
     setHasMetaMask(true);
   }, []);
 
+  useEffect(() => {
+    if (error?.name === 'UnsupportedChainIdError') {
+      toast.error(
+        `This dapp only works on the Rinkeby network, please switch networks in your connected wallet.`,
+        { autoClose: false },
+      );
+    }
+  }, [error]);
+
   // This useEffect grabs all our the addresses of our members holding our NFT.
   useEffect(() => {
     if (!hasClaimedNFT) {
@@ -226,18 +235,6 @@ const Home: NextPage = () => {
     }
   };
 
-  if (error && error.name === 'UnsupportedChainIdError') {
-    return (
-      <div className="unsupported-network">
-        <h2>Please connect to Rinkeby</h2>
-        <p>
-          This dapp only works on the Rinkeby network, please switch networks in
-          your connected wallet.
-        </p>
-      </div>
-    );
-  }
-
   async function vote() {
     if (!address || isVoting || hasVoted) {
       return;
@@ -334,7 +331,9 @@ const Home: NextPage = () => {
   }
 
   const votingState = hasVoted ? 'voted' : isVoting ? 'voting' : 'vote';
-  const displayContents = hasMetaMask && address;
+  const displayContents =
+    hasMetaMask && address && error?.name !== 'UnsupportedChainIdError';
+
   return (
     <>
       <Head>
