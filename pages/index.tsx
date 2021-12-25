@@ -82,6 +82,7 @@ const Home: NextPage = () => {
       })
       .catch((err) => {
         console.error('failed to get member list', err);
+        toast.error('Failed to get member list');
       });
   }, [hasClaimedNFT]);
 
@@ -114,6 +115,7 @@ const Home: NextPage = () => {
       })
       .catch((err) => {
         console.error('failed to get token amounts', err);
+        toast.error('Failed to get token amounts');
       });
   }, [hasClaimedNFT]);
 
@@ -138,6 +140,7 @@ const Home: NextPage = () => {
       .catch((error) => {
         setHasClaimedNFT(false);
         console.error('failed to nft balance', error);
+        toast.error('Failed to get NFT balance');
       });
   }, [address]);
 
@@ -160,6 +163,7 @@ const Home: NextPage = () => {
       })
       .catch((err) => {
         console.error('failed to get proposals', err);
+        toast.error('Failed to get proposals');
       });
   }, [hasClaimedNFT]);
 
@@ -183,7 +187,8 @@ const Home: NextPage = () => {
         console.log('🥵 User has already voted');
       })
       .catch((err) => {
-        console.error('failed to check if wallet has voted', err);
+        console.error('failed to check if member has voted', err);
+        toast.error('Failed to check if member has voted');
       });
   }, [hasClaimedNFT, proposals, address]);
 
@@ -192,22 +197,32 @@ const Home: NextPage = () => {
       return;
     }
 
+    const toastId = address;
     setIsClaiming(true);
-    toast.info('🔨 Minting NFT...', { toastId: address });
+    toast.info('🔨 Minting NFT...', { toastId, autoClose: false });
 
     try {
       // Mint an NFT to the user's wallet.
       await bundleDropModule.claim('0', 1);
       setHasClaimedNFT(true);
       toast.info(
-        `🌊 Successfully Minted! Check it out on OpenSea: https://testnets.opensea.io/assets/${bundleDropModule.address}/0`,
+        <p>
+          <span aria-hidden="true">🌊</span> Successfully Minted! Check out{' '}
+          <a
+            href="https://testnets.opensea.io/assets/${bundleDropModule.address}/0"
+            target="__opensea__"
+          >
+            your minted NFT on OpenSea
+          </a>
+        </p>,
+        { autoClose: false },
       );
     } catch (err) {
-      toast.error(`💥 Failed to mint NFT. Please try again.`);
       console.error('failed to claim', err);
+      toast.error(`💥 Failed to mint NFT. Please try again.`);
     } finally {
       setIsClaiming(false);
-      toast.dismiss(address);
+      toast.dismiss(toastId);
     }
   };
 
@@ -228,8 +243,11 @@ const Home: NextPage = () => {
       return;
     }
 
+    const toastId = address;
+
     //before we do async things, we want to disable the button to prevent double clicks
     setIsVoting(true);
+    toast.info('🔨 Voting...', { toastId, autoClose: false });
 
     // lets get the votes from the form for the values
     const votes = proposals.map((proposal) => {
@@ -277,6 +295,7 @@ const Home: NextPage = () => {
             return;
           }),
         );
+
         try {
           // if any of the propsals are ready to be executed we'll need to execute them
           // a proposal is ready to be executed if it is in state 4
@@ -295,17 +314,22 @@ const Home: NextPage = () => {
           setHasVoted(true);
           // and log out a success message
           console.log('successfully voted');
+          toast.success('🎉 Successfully voted!');
         } catch (err) {
           console.error('failed to execute votes', err);
+          toast.error('Failed to execute votes');
         }
       } catch (err) {
         console.error('failed to vote', err);
+        toast.error('Failed to vote');
       }
     } catch (err) {
       console.error('failed to delegate tokens');
+      toast.error('Failed to delegate tokens');
     } finally {
       // in *either* case we need to set the isVoting state to false to enable the button again
       setIsVoting(false);
+      toast.dismiss(toastId);
     }
   }
 
