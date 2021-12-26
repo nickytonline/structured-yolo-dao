@@ -342,24 +342,22 @@ const Home: NextPage = () => {
           gap: '0.25rem',
           gridTemplateAreas: '". . wallet" "header header header"',
           placeItems: 'center',
-          '& :nth-child(2)': {
-            gridArea: 'wallet',
-          },
-          '& :nth-child(3)': {
-            gridArea: 'header',
-          },
         }}
       >
-        <ToastContainer />
-        <Wallet
-          connectWallet={() => connectWallet('injected')}
-          account={address}
-          domainName={domainName}
-          avatar={avatar ?? DEFAULT_AVATAR}
-        />
-        <Header />
+        <div sx={{ gridArea: 'wallet' }}>
+          <Wallet
+            connectWallet={() => connectWallet('injected')}
+            account={address}
+            domainName={domainName}
+            avatar={avatar ?? DEFAULT_AVATAR}
+          />
+        </div>
+        <div sx={{ gridArea: 'header' }}>
+          <Header />
+        </div>
       </header>
       <main sx={{ margin: '16px' }}>
+        <ToastContainer />
         {displayContents ? (
           hasClaimedNFT ? (
             <div>

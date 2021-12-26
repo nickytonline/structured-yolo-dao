@@ -10,7 +10,7 @@ export const Wallet: React.FC<{
   connectWallet: () => void;
 }> = ({ account, domainName, connectWallet, avatar }) => {
   return (
-    <div>
+    <>
       {account ? (
         <EtherscanLink
           address={account}
@@ -20,6 +20,6 @@ export const Wallet: React.FC<{
       ) : (
         <Button onClick={connectWallet}>Connect Wallet</Button>
       )}
-    </div>
+    </>
   );
 };
