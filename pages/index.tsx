@@ -1,5 +1,4 @@
 import type { NextPage } from 'next';
-import Head from 'next/head';
 import { Header } from '@components/Header';
 import { Wallet } from '@components/Wallet';
 import { useWeb3WithEns } from 'utilities/hooks';
@@ -336,11 +335,6 @@ const Home: NextPage = () => {
 
   return (
     <>
-      <Head>
-        <title>Welcome to Structured YOLO DAO</title>
-        <meta name="description" content="Welcome to Web3" />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
       <header
         sx={{
           margin: '1rem',
