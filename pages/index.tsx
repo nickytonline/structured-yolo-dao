@@ -360,7 +360,7 @@ const Home: NextPage = () => {
         <ToastContainer />
         {displayContents ? (
           hasClaimedNFT ? (
-            <div>
+            <div className="stack">
               <h1>🍪 DAO Member Page</h1>
               <p>
                 <em>You&apos;re in friend!</em> Congrats on being a member of

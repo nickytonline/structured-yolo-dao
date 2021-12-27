@@ -3,7 +3,7 @@ import { shortenAddress } from 'utilities/addresses';
 
 export const DaoMembers: React.FC<{ members: Member[] }> = ({ members }) => {
   return (
-    <div>
+    <div className="stack">
       <h2>Member List</h2>
       <table className="card">
         <thead>

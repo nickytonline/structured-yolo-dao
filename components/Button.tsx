@@ -4,6 +4,7 @@ export const Button: React.FC<ButtonProps> = ({
   children,
   onClick,
   type = 'button',
+  ...extraProps
 }) => {
   return (
     <button
@@ -17,6 +18,7 @@ export const Button: React.FC<ButtonProps> = ({
         cursor: 'pointer',
       }}
       onClick={onClick}
+      {...extraProps}
     >
       {children}
     </button>

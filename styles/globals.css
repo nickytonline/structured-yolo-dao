@@ -70,8 +70,12 @@ legend {
   max-width: 80%;
 }
 
-main * + * {
+.stack > * + * {
   margin-top: 16px;
+}
+
+summary {
+  cursor: pointer;
 }
 
 .card {
@@ -91,4 +95,11 @@ main * + * {
   );
   border-radius: 8px;
   border-image-slice: 1;
+}
+
+[aria-disabled],
+[aria-disabled][class] {
+  cursor: not-allowed;
+  pointer-events: none;
+  opacity: 50%;
 }
