@@ -5,6 +5,12 @@
 My [Buildspace](https://buildspace) DAO project. Lots of fun and as always,
 thanks Buildspace team for such great learning content!
 
+<center>
+
+![The Structured YOLO DAO](structured-yolo-dao.png)
+
+</center>
+
 ## Contributing
 
 If you are interested in contributing to the project, first read our
