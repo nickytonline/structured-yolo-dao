@@ -80,9 +80,12 @@ export const DaoProposals: React.FC<{
           <Button {...disabled} type="submit">
             {getSubmitButtonText(votingState)}
           </Button>
-          <span sx={{ marginLeft: '8px' }}>
-            This will trigger multiple transactions that you will need to sign.
-          </span>
+          {votingState !== 'voted' ? (
+            <span sx={{ marginLeft: '8px' }}>
+              This will trigger multiple transactions that you will need to
+              sign.
+            </span>
+          ) : null}
         </>
       </form>
     </div>
