@@ -18,12 +18,6 @@ import { DaoMembers } from '@components/DaoMembers';
 import { DaoProposals } from '@components/DaoProposals';
 import { Footer } from '@components/Footer';
 
-function shortenAddress(address: string) {
-  return (
-    address.substring(0, 6) + '...' + address.substring(address.length - 4)
-  );
-}
-
 const sdk = new ThirdwebSDK('rinkeby');
 
 // Grab a reference to our ERC-1155 contract.
@@ -345,12 +339,14 @@ const Home: NextPage = () => {
         }}
       >
         <div sx={{ gridArea: 'wallet' }}>
-          <Wallet
-            connectWallet={() => connectWallet('injected')}
-            account={address}
-            domainName={domainName}
-            avatar={avatar ?? DEFAULT_AVATAR}
-          />
+          {hasMetaMask ? (
+            <Wallet
+              connectWallet={() => connectWallet('injected')}
+              account={address}
+              domainName={domainName}
+              avatar={avatar ?? DEFAULT_AVATAR}
+            />
+          ) : null}
         </div>
         <div sx={{ gridArea: 'header' }}>
           <Header />
