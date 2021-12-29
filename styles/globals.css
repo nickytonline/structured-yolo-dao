@@ -54,6 +54,12 @@ h6 {
 body {
   font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
     Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+  --brand-gradient: linear-gradient(
+    90deg,
+    #f10f9f 0%,
+    rgb(0, 183, 255) 50%,
+    #bb88ff 80%
+  );
 }
 
 /* Animations are off by default for those that prefer reduced motion
@@ -87,12 +93,7 @@ summary {
   border: 8px solid;
   /* Thanks for the border gradient tip https://css-tricks.com/gradient-borders-in-css */
   border-width: 4px;
-  border-image-source: linear-gradient(
-    90deg,
-    #d53a9d 0%,
-    rgba(0, 255, 255, 1) 50%,
-    #d400ff 100%
-  );
+  border-image-source: var(--brand-gradient);
   border-radius: 8px;
   border-image-slice: 1;
 }

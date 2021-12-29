@@ -9,6 +9,7 @@ export const EtherscanLink: React.FC<{
     <a
       sx={{
         backgroundColor: '#fff',
+
         color: 'accent',
         borderRadius: '32px',
         textOverflow: 'ellipsis',
